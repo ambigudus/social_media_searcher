@@ -214,7 +214,7 @@ def main():
 if __name__ == '__main__':
 	for i in range(0,len(oidlist)):
 		#time.sleep(60*30)
-		save_list.clear()
+		#save_list.clear()
 		oid=oidlist[i]
 		main()
 		#print(oid)
