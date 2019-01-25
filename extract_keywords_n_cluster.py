@@ -10,7 +10,7 @@ import jieba
 from cluster import Clusters
 from collections import Counter
 
-data = pd.read_csv("gqt.csv",encoding='gbk',names=['time','content','forward','comment','like','url'])
+data = pd.read_csv("./data/gqt.csv",encoding='gbk',names=['time','content','forward','comment','like','url'])
 data=data.dropna()
 #print(data)
 data['time']=pd.to_datetime(data['time'],format='%Y-%m-%d')
@@ -19,7 +19,7 @@ data=data.sort_values(by='time',ascending=False)
 dates =data['month'].tolist()
 
 
-stop_words = [word.strip() for word in open('stop_words.txt', 'r',encoding='utf-8').readlines()]
+stop_words = [word.strip() for word in open('./data/stop_words.txt', 'r',encoding='utf-8').readlines()]
 # print(stop_words)
 print("正在分词...")
 # 分词，去除停用词
@@ -133,7 +133,7 @@ data.insert(0,'tag',tags)
 data['heat']=data.apply(lambda x: x['forward']*0.5+x['comment']*0.4+x['like']*0.1,axis=1)   #计算热度
 df=data[['month','tag','heat','content']]
 df=df.sort_values(by=['tag','month','heat'],ascending=[True,True,False])
-df.to_csv('clusters_result.csv',index=None)         #聚类结果
+df.to_csv('./output/clusters_result.csv',index=None)         #聚类结果
 
 #得到聚类后的类关键词
 cnt=0
@@ -156,10 +156,10 @@ for i in range(len(set(tags))):
         cluster_keyword.append(' '.join(cluster_key))
 tag_csv={'tags':tag_valid,'cluster_keywords':cluster_keyword}
 df_tag=pd.DataFrame(tag_csv,columns=['tags', 'cluster_keywords'])
-df_tag.to_csv('cluster_keywords.csv',index=None)  #保存有效聚类的关键词
+df_tag.to_csv('./output/cluster_keywords.csv',index=None)  #保存有效聚类的关键词
 
 c={"month": dates,"keywords": kw}
 kw = pd.DataFrame(c,columns=['month', 'keywords']) 
-kw.to_csv('period_keywords.csv',index=None)        #输出每个时间窗的关键词
+kw.to_csv('./output/period_keywords.csv',index=None)        #输出每个时间窗的关键词
 data['splitword']=data['splitword'].apply(lambda x: ' '.join(x))
-data[['time','content','splitword']].to_csv('content&splitword.csv',index=None)
+data[['time','content','splitword']].to_csv('./output/content&splitword.csv',index=None)
