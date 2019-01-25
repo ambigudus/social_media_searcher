@@ -81,7 +81,9 @@ def save_weibo(text):
 	filename="data.csv"
 	with open(filename,"w",newline ='') as csvfile:
 		weibo_csv = csv.writer(csvfile)
-		weibo_csv.writerow(title_csv)
+		#weibo_csv.writerow(title_csv)
+		print('here')
+		print(len(save_list))
 		for weibo in save_list:
 			text=[]
 			text.append(weibo['发表时间'])
@@ -172,10 +174,12 @@ def get_content(url):
 
 				# 获取时间
 				text['发表时间'] = text_mblog['created_at']
-				if('2017' in text['发表时间'] and '2018' not in text['发表时间']):
-				#if ('2018' in text['发表时间']):
+				if('2017' in text['发表时间']):
 					time_flag=False
 					break
+				save_flag=False
+				if('2018' in text['发表时间']):
+					save_flag=True
 				text['转发'] = text_mblog['reposts_count']
 				text['评论'] = text_mblog['comments_count']
 				text['点赞'] = text_mblog['attitudes_count']
@@ -183,9 +187,10 @@ def get_content(url):
 				# 博文是否有图片
 				#print(text['博文'],end='\t')
 				#print(text['发表时间'])
-				save_list.append(text)
-				save_weibo(text['博文'])
-				#save_list.append(text['博文'])
+				if(save_flag is True):
+					save_list.append(text)
+					save_weibo(text['博文'])
+					#save_list.append(text['博文'])
 			print("获取"+str(num)+"条博文...")
 			# print(text_data)
 	except Exception as e:
