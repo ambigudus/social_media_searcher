@@ -27,20 +27,21 @@ class Clusters():
         #self.len=len(self.ls)
         self.vecs=vecs
         self.clust=[]
+        self.clust_zero=[]
         self.score=0
     def compare(self,v1,v2):
         sum1=v1.sum()
         sum2=v2.sum()
         #print(v1,sum1,v2,sum2)
-        if v1.dot(v2)==0 or sum1*sum2<4:
+        if v1.dot(v2)==0 :
             return False        
         scor=(min(sum1,sum2)-v1.dot(v2))/min(sum1,sum2)
         self.score+=scor
-        #print(scor)
-        if sum1>3 and sum2>3:            
-            return scor <= 0.6        
+        #print(scor)       
+        if sum1<=2 or sum2<=2:
+            return scor ==0
         else:
-            return scor < 0.5
+            return scor< 0.6
     def cluster_compare(self,cluster,v,total,k):
         if total==k+1:
             return self.compare(self.vecs[cluster[k]],v)            
@@ -50,7 +51,7 @@ class Clusters():
             else:
                 return False
     def classify(self,tags_num):
-        i1,i2=np.random.choice(self.ls,size=2,replace=False)
+        i1,i2=0,1#np.random.choice(self.ls,size=2,replace=False)
         TF=self.compare(self.vecs[i1],self.vecs[i2])
         if TF: 
             self.clust.append([i1, i2])
@@ -62,7 +63,11 @@ class Clusters():
         
         while self.ls:
             scor=float('inf')
-            i=random.choice(self.ls)
+            i=self.ls[0]#random.choice(self.ls)
+            if self.vecs[i].sum()==0:
+                self.clust_zero.extend([[i]])
+                self.ls.remove(i)
+                continue
             out=-1
             #print(len(self.clust))
             for j in range(len(self.clust)):
@@ -77,7 +82,7 @@ class Clusters():
                 self.clust[out].append(i)
               
             self.ls.remove(i)
-
+        self.clust+=self.clust_zero
         output=[0]*len(self.vecs)
         for i in range(len(self.clust)):
             for index in self.clust[i]:
